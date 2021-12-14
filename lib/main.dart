@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,7 +11,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: LoginDemo(),
-      theme: ThemeData(primarySwatch: Colors.purple),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
     );
   }
 }
@@ -21,67 +24,81 @@ class LoginDemo extends StatefulWidget {
 }
 
 class _LoginDemoState extends State<LoginDemo> {
+  final Dio dio = Dio();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void sendSms() async {
+    try {
+      print("SENDING....");
+      final res =
+          await dio.post("https://api.textlocal.in/send/", queryParameters: {
+        "apikey": "Mzc0NTM3NzM3NTc2NDEzODQ2MzM0YjU1NTc3NTc3Njk=",
+        "numbers": "917095832240",
+        "message":
+            "Hi there, thank you for sending your first test message from Textlocal. See how you can send effective SMS campaigns here: https://tx.gl/r/2nGVj/",
+        "sender": "600010",
+        "test": true,
+      });
+      print("DONE...");
+      print(res.data);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          "TEXT SENDER",
+          "Alerter",
           textAlign: TextAlign.center,
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 60.0),
+      body: Column(
+        children: <Widget>[
+          const SizedBox(
+            height: 80,
+          ),
+          Padding(
+            //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: TextField(
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Phone Numbers (comma separated)'),
             ),
-            SizedBox(
-              height: 150,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+                left: 15.0, right: 15.0, top: 15, bottom: 0),
+            //padding: EdgeInsets.symmetric(horizontal: 15),
+            child: TextField(
+              maxLines: 5,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  // labelText: 'Text',
+                  hintText: 'Input message'),
             ),
-            Padding(
-              //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Mobile No',
-                    hintText: 'Enter valid Mobile No as 1234567890'),
-              ),
+          ),
+          Spacer(),
+          SizedBox(
+            height: 50,
+            width: 150,
+            child: ElevatedButton(
+              onPressed: () {
+                sendSms();
+              },
+              child: Text("Send"),
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Text',
-                    hintText: 'Enter Text you want to send'),
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            GestureDetector(
-              child: Container(
-                height: 50,
-                width: 250,
-                decoration: BoxDecoration(
-                    color: Colors.purple,
-                    borderRadius: BorderRadius.circular(20)),
-                child: Text(
-                  'SEND',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontSize: 25),
-                ),
-              ),
-              onTap: () {},
-            ),
-          ],
-        ),
+          ),
+          SizedBox(height: 30),
+        ],
       ),
     );
   }
